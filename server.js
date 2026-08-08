@@ -1,18 +1,20 @@
 /**
  * ProConnect backend — zero external dependencies.
- * Serves the frontend from /public and a small REST API from /api/*,
- * persisting data to data/db.json.
- *
- * Run:  node server.js
- * Then open http://localhost:3000 in your browser.
+ * Serves the frontend from /public (or root) and a small REST API from /api/*,
+ * persisting data to data/db.json (or db.json).
  */
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
 const PORT = process.env.PORT || 3000;
-const DATA_FILE = path.join(__dirname, "data", "db.json");
-const PUBLIC_DIR = path.join(__dirname, "public");
+const DATA_FILE = fs.existsSync(path.join(__dirname, "data", "db.json"))
+  ? path.join(__dirname, "data", "db.json")
+  : path.join(__dirname, "db.json");
+
+const PUBLIC_DIR = fs.existsSync(path.join(__dirname, "public"))
+  ? path.join(__dirname, "public")
+  : __dirname;
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
