@@ -427,8 +427,13 @@ const NOTIFICATIONS = [
 /* ============ SMALL COMPONENTS ============ */
 function extractDriveId(url){
   if(!url || typeof url !== 'string') return null;
-  const match = url.match(/id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  return match ? match[1] : null;
+  const trimmed = url.trim();
+  if(trimmed.startsWith('data:')) return null;
+  if(trimmed.includes('drive.google.com') || trimmed.includes('googleusercontent.com')){
+    const match = trimmed.match(/id=([a-zA-Z0-9_-]+)/) || trimmed.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  }
+  return null;
 }
 
 function Avatar({name,size=44,gradient,photo}){
