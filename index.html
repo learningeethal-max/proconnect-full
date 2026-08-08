@@ -425,28 +425,44 @@ const NOTIFICATIONS = [
 ];
 
 /* ============ SMALL COMPONENTS ============ */
-function formatPhotoUrl(url){
+function extractDriveId(url){
   if(!url || typeof url !== 'string') return null;
   const match = url.match(/id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if(match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-  if(url.startsWith('http') || url.startsWith('data:')) return url;
-  return null;
+  return match ? match[1] : null;
 }
 
 function Avatar({name,size=44,gradient,photo}){
-  const [imgErr, setImgErr] = useState(false);
-  const imgUrl = !imgErr ? formatPhotoUrl(photo) : null;
+  const driveId = useMemo(()=>extractDriveId(photo), [photo]);
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(()=>{
+    setAttempt(0);
+  }, [photo]);
+
   const bg = gradient
     ? {background:`linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`}
     : gradientFor(name);
 
-  if(imgUrl){
+  let currentSrc = null;
+  if(photo && typeof photo === 'string' && photo.trim()){
+    const trimmed = photo.trim();
+    if(driveId){
+      if(attempt === 0) currentSrc = `https://lh3.googleusercontent.com/d/${driveId}`;
+      else if(attempt === 1) currentSrc = `https://drive.google.com/thumbnail?id=${driveId}&sz=w500`;
+      else if(attempt === 2) currentSrc = `https://drive.google.com/uc?export=view&id=${driveId}`;
+    } else if(attempt === 0 && (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:'))){
+      currentSrc = trimmed;
+    }
+  }
+
+  if(currentSrc){
     return (
-      <img src={imgUrl} alt={name} className="avatar"
+      <img src={currentSrc} alt={name} className="avatar"
         style={{width:size,height:size,objectFit:'cover',borderRadius:'50%',boxShadow:'0 2px 8px rgba(0,0,0,0.1)',flexShrink:0}}
-        onError={()=>setImgErr(true)}/>
+        onError={()=>setAttempt(a=>a+1)}/>
     );
   }
+
   return (
     <div className="avatar" style={{width:size,height:size,fontSize:size*0.36, ...bg}}>
       {initials(name)}
