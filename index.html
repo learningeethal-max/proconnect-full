@@ -1040,6 +1040,20 @@ function ProfileForm({mode,initialType,initialData,onCancel,onSave}){
 
   function update(field,val){ setData(d=>({...d,[field]:val})); }
 
+  function handleFileSelect(e){
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    if(file.size > 5 * 1024 * 1024){
+      alert("Please select an image smaller than 5MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt)=>{
+      update("photo", evt.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
   function validate(){
     const e={};
     if(!data.name || !data.name.trim()) e.name="Full name is required.";
@@ -1098,10 +1112,23 @@ function ProfileForm({mode,initialType,initialData,onCancel,onSave}){
             </select>
           </Field>
 
-          <Field field="photo" label="Photo Upload" span>
-            <div className="photo-upload">
-              <Avatar name={data.name||"New User"} size={54}/>
-              <div className="upload-box">Click to upload a photo (JPG or PNG, max 2MB)</div>
+          <Field field="photo" label="Photo Upload (File or Image/Google Drive Link)" span>
+            <div className="photo-upload" style={{display:'flex',gap:16,alignItems:'center'}}>
+              <Avatar name={data.name||"New User"} size={60} photo={data.photo}/>
+              <div style={{display:'flex',flexDirection:'column',gap:8,flex:1}}>
+                <div style={{display:'flex',gap:10,alignItems:'center'}}>
+                  <label className="btn btn-secondary btn-sm" style={{cursor:'pointer',margin:0}}>
+                    <I.Plus style={{width:14,height:14}}/> Choose Image File
+                    <input type="file" accept="image/*" style={{display:'none'}} onChange={handleFileSelect}/>
+                  </label>
+                  {data.photo && (
+                    <button type="button" className="btn btn-ghost btn-sm" style={{color:'var(--red)'}} onClick={()=>update("photo","")}>
+                      <I.Trash style={{width:14,height:14}}/> Remove Photo
+                    </button>
+                  )}
+                </div>
+                <input type="text" value={data.photo||""} onChange={e=>update("photo",e.target.value)} placeholder="Or paste image URL / Google Drive photo link..." style={{fontSize:12.5,padding:'8px 12px',borderRadius:8,border:'1px solid var(--border)'}}/>
+              </div>
             </div>
           </Field>
 
@@ -1269,6 +1296,7 @@ function App(){
   }
   function handleLogout(){
     setRole("viewer"); setAdminUser(null); setProfileOpen(false);
+    changeView("dashboard");
     setToast("Signed out.");
   }
 
