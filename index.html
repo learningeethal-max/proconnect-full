@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ProConnect — Talent Directory</title>
+<title>Eethal Learning — Talent Directory</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
@@ -425,10 +425,28 @@ const NOTIFICATIONS = [
 ];
 
 /* ============ SMALL COMPONENTS ============ */
-function Avatar({name,size=44,gradient}){
+function formatPhotoUrl(url){
+  if(!url || typeof url !== 'string') return null;
+  const match = url.match(/id=([a-zA-Z0-9_-]+)/) || url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if(match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  if(url.startsWith('http') || url.startsWith('data:')) return url;
+  return null;
+}
+
+function Avatar({name,size=44,gradient,photo}){
+  const [imgErr, setImgErr] = useState(false);
+  const imgUrl = !imgErr ? formatPhotoUrl(photo) : null;
   const bg = gradient
     ? {background:`linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`}
     : gradientFor(name);
+
+  if(imgUrl){
+    return (
+      <img src={imgUrl} alt={name} className="avatar"
+        style={{width:size,height:size,objectFit:'cover',borderRadius:'50%',boxShadow:'0 2px 8px rgba(0,0,0,0.1)',flexShrink:0}}
+        onError={()=>setImgErr(true)}/>
+    );
+  }
   return (
     <div className="avatar" style={{width:size,height:size,fontSize:size*0.36, ...bg}}>
       {initials(name)}
@@ -516,7 +534,7 @@ function Sidebar({view,setView,onLogout}){
         <div className="logo-mark">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="7" r="2.6"/><circle cx="17" cy="7" r="2.6"/><circle cx="12" cy="17" r="2.6"/><path d="M9 8.5 10.3 15M15 8.5 13.7 15"/></svg>
         </div>
-        <div className="logo-text on-dark font-display">ProConnect</div>
+        <div className="logo-text on-dark font-display">Eethal Learning</div>
       </div>
       <div className="sidebar-badge"><I.Shield style={{width:14,height:14}}/> Admin Mode</div>
       <nav className="nav-section">
@@ -559,7 +577,7 @@ function TopHeader({view, setView, globalSearch, setGlobalSearch, onSearchSubmit
             <div className="logo-mark">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="7" r="2.6"/><circle cx="17" cy="7" r="2.6"/><circle cx="12" cy="17" r="2.6"/><path d="M9 8.5 10.3 15M15 8.5 13.7 15"/></svg>
             </div>
-            <div className="logo-text font-display">ProConnect</div>
+            <div className="logo-text font-display">Eethal Learning</div>
           </div>
         )}
         <div className="search-box">
@@ -662,7 +680,7 @@ function Dashboard({professionals,students,setView,openDetail}){
         </div>
         <div className="card-grid">
           {recentPros.map(p=>(
-            <MiniCard key={p.id} title={p.name} sub={p.designation} extra={p.company} tag={p.experience+" yrs"} district={p.district} onClick={()=>openDetail("professional",p.id)}/>
+            <MiniCard key={p.id} title={p.name} sub={p.designation} extra={p.company} tag={p.experience+" yrs"} district={p.district} photo={p.photo} onClick={()=>openDetail("professional",p.id)}/>
           ))}
         </div>
       </div>
@@ -674,7 +692,7 @@ function Dashboard({professionals,students,setView,openDetail}){
         </div>
         <div className="card-grid">
           {recentStu.map(s=>(
-            <MiniCard key={s.id} title={s.name} sub={s.specialization} extra={s.education} tag={s.gradYear} district={s.district} onClick={()=>openDetail("student",s.id)}/>
+            <MiniCard key={s.id} title={s.name} sub={s.specialization} extra={s.education} tag={s.gradYear} district={s.district} photo={s.photo} onClick={()=>openDetail("student",s.id)}/>
           ))}
         </div>
       </div>
@@ -682,10 +700,10 @@ function Dashboard({professionals,students,setView,openDetail}){
   );
 }
 
-function MiniCard({title,sub,extra,tag,district,onClick}){
+function MiniCard({title,sub,extra,tag,district,photo,onClick}){
   return (
     <div className="profile-card" onClick={onClick} style={{cursor:'pointer'}}>
-      <div className="pc-top"><Avatar name={title} size={46}/><span className="pc-tag">{tag}</span></div>
+      <div className="pc-top"><Avatar name={title} size={46} photo={photo}/><span className="pc-tag">{tag}</span></div>
       <div className="pc-name">{title}</div>
       <div className="pc-role">{sub}</div>
       <div className="pc-sub">{extra}</div>
@@ -699,7 +717,7 @@ function ProfessionalCard({p,onClick,onEdit,onDelete,isAdmin}){
   return (
     <div className="profile-card" onClick={onClick}>
       <div className="pc-top">
-        <Avatar name={p.name}/>
+        <Avatar name={p.name} photo={p.photo}/>
         <CardMenu onView={onClick} onEdit={onEdit} onDelete={onDelete} isAdmin={isAdmin}/>
       </div>
       <div className="pc-name">{p.name} {p.verified && <I.CheckCircle style={{color:'#0FA981',width:14,height:14,verticalAlign:-1}}/>}</div>
@@ -796,7 +814,7 @@ function StudentCard({s,onClick,onEdit,onDelete,isAdmin}){
   return (
     <div className="profile-card" onClick={onClick}>
       <div className="pc-top">
-        <Avatar name={s.name}/>
+        <Avatar name={s.name} photo={s.photo}/>
         <CardMenu onView={onClick} onEdit={onEdit} onDelete={onDelete} isAdmin={isAdmin}/>
       </div>
       <div className="pc-name">{s.name}</div>
@@ -952,7 +970,7 @@ function ProfileDetailPage({type,data,onBack,onEdit,onDelete,isAdmin}){
       </div>
 
       <div className="profile-header-card">
-        <Avatar name={data.name} size={82}/>
+        <Avatar name={data.name} size={82} photo={data.photo}/>
         <div>
           <div className="ph-name-row">
             <h2 className="font-display">{data.name}</h2>
@@ -1169,7 +1187,7 @@ function LoginModal({onCancel,onSubmit}){
         <p>Sign in with an admin account to add or delete profiles.</p>
         <div className="login-field">
           <label>Email Address</label>
-          <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="name@proconnect.com"
+          <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="name@eethallearning.com"
             onKeyDown={e=>{ if(e.key==='Enter') submit(); }}/>
         </div>
         <div className="login-field">
@@ -1178,7 +1196,7 @@ function LoginModal({onCancel,onSubmit}){
             onKeyDown={e=>{ if(e.key==='Enter') submit(); }}/>
         </div>
         {error && <p style={{color:'var(--red)',fontSize:12.5,margin:'-8px 0 14px'}}>{error}</p>}
-        <p style={{fontSize:11.5,color:'var(--text-faint)',margin:'0 0 18px'}}>Demo access: deepa.raghavan@proconnect.com / admin123</p>
+        <p style={{fontSize:11.5,color:'var(--text-faint)',margin:'0 0 18px'}}>Demo access: deepa.raghavan@eethallearning.com / admin123</p>
         <div className="modal-actions">
           <button className="btn btn-secondary" onClick={onCancel} disabled={loading}>Cancel</button>
           <button className="btn btn-primary" onClick={submit} disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
@@ -1307,7 +1325,7 @@ function App(){
     mainContent = (
       <div className="empty-state">
         <I.Empty style={{color:'#C7CADC'}}/>
-        <h3>Loading ProConnect&hellip;</h3>
+        <h3>Loading Eethal Learning&hellip;</h3>
         <p>Fetching profiles from the server.</p>
       </div>
     );
@@ -1340,7 +1358,7 @@ function App(){
     mainContent = (
       <div>
         <div className="page-head"><div><h1 className="font-display">{view.charAt(0).toUpperCase()+view.slice(1)}</h1><p>This section is under construction.</p></div></div>
-        <EmptyState title="Coming Soon" subtitle="This part of ProConnect is being built out. Check back shortly."/>
+        <EmptyState title="Coming Soon" subtitle="This part of Eethal Learning is being built out. Check back shortly."/>
       </div>
     );
   }
