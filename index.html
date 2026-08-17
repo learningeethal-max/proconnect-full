@@ -3,12 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Eethal Learning Talent Directory — Discover working professionals and students from Tamil Nadu." />
 <title>Eethal Learning — Talent Directory</title>
+<!-- DNS prefetch for faster CDN connections -->
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://lh3.googleusercontent.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<!-- Fonts: only load weights we actually use -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexend:wght@600;700&display=swap" rel="stylesheet">
+<!-- React & ReactDOM loaded first (critical) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+<!-- Babel loaded last (non-blocking defer trick not possible with text/babel, so keep inline) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 <style>
 :root{
@@ -363,12 +371,71 @@ tr:last-child td{border-bottom:none;}
 .login-field input:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(91,95,239,0.12);}
 .login-submit{width:100%;padding:12px;font-size:14px;justify-content:center;margin-top:6px;}
 .login-hint{text-align:center;font-size:12px;color:var(--text-faint);margin-top:18px;}
+
+/* ---------- Skeleton Loader ---------- */
+@keyframes shimmer{
+  0%{background-position:-800px 0}
+  100%{background-position:800px 0}
+}
+.skel{
+  background:linear-gradient(90deg,#eef0f5 25%,#f8f9fc 50%,#eef0f5 75%);
+  background-size:800px 100%;
+  animation:shimmer 1.4s infinite linear;
+  border-radius:8px;
+}
+.skel-topbar{
+  height:68px;background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;gap:16px;
+}
+.skel-subnav{
+  height:52px;background:var(--navy);display:flex;align-items:center;padding:0 24px;gap:12px;
+}
+.skel-content{padding:28px;}
+.skel-row{display:flex;gap:16px;margin-bottom:26px;}
+.skel-card{flex:1;background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px;}
+.skel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:1080px){.skel-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:860px){.skel-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-<div id="root"></div>
+<!-- Instant skeleton shown immediately before React loads -->
+<div id="root">
+  <div style="display:flex;flex-direction:column;min-height:100vh;">
+    <!-- Top nav skeleton -->
+    <div class="skel-topbar">
+      <div class="skel" style="width:140px;height:32px;border-radius:8px"></div>
+      <div class="skel" style="width:300px;height:36px;border-radius:10px;margin:0 auto"></div>
+      <div style="margin-left:auto;display:flex;gap:12px;align-items:center">
+        <div class="skel" style="width:40px;height:40px;border-radius:10px"></div>
+        <div class="skel" style="width:90px;height:40px;border-radius:10px"></div>
+      </div>
+    </div>
+    <!-- Subnav skeleton -->
+    <div class="skel-subnav">
+      <div class="skel" style="width:90px;height:32px;border-radius:9px;background:rgba(255,255,255,0.1)"></div>
+      <div class="skel" style="width:140px;height:32px;border-radius:9px;background:rgba(255,255,255,0.1)"></div>
+      <div class="skel" style="width:90px;height:32px;border-radius:9px;background:rgba(255,255,255,0.1)"></div>
+    </div>
+    <!-- Main content skeleton -->
+    <div class="skel-content">
+      <!-- Stat cards -->
+      <div class="skel-row">
+        <div class="skel-card"><div class="skel" style="height:24px;width:60%;margin-bottom:12px"></div><div class="skel" style="height:36px;width:40%"></div></div>
+        <div class="skel-card"><div class="skel" style="height:24px;width:60%;margin-bottom:12px"></div><div class="skel" style="height:36px;width:40%"></div></div>
+      </div>
+      <!-- Profile cards -->
+      <div class="skel-grid">
+        <div class="skel-card"><div class="skel" style="width:46px;height:46px;border-radius:50%;margin-bottom:14px"></div><div class="skel" style="height:16px;width:80%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:60%"></div></div>
+        <div class="skel-card"><div class="skel" style="width:46px;height:46px;border-radius:50%;margin-bottom:14px"></div><div class="skel" style="height:16px;width:80%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:60%"></div></div>
+        <div class="skel-card"><div class="skel" style="width:46px;height:46px;border-radius:50%;margin-bottom:14px"></div><div class="skel" style="height:16px;width:80%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:60%"></div></div>
+        <div class="skel-card"><div class="skel" style="width:46px;height:46px;border-radius:50%;margin-bottom:14px"></div><div class="skel" style="height:16px;width:80%;margin-bottom:8px"></div><div class="skel" style="height:13px;width:60%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
 <script type="text/babel" data-presets="react">
-const { useState, useEffect, useMemo, useRef } = React;
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 /* ============ ICONS ============ */
 const I = {
@@ -439,9 +506,11 @@ function extractDriveId(url){
 function Avatar({name,size=44,gradient,photo}){
   const driveId = useMemo(()=>extractDriveId(photo), [photo]);
   const [attempt, setAttempt] = useState(0);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(()=>{
     setAttempt(0);
+    setLoaded(false);
   }, [photo]);
 
   const bg = gradient
@@ -462,9 +531,14 @@ function Avatar({name,size=44,gradient,photo}){
 
   if(currentSrc){
     return (
-      <img src={currentSrc} alt={name} className="avatar"
-        style={{width:size,height:size,objectFit:'cover',borderRadius:'50%',boxShadow:'0 2px 8px rgba(0,0,0,0.1)',flexShrink:0}}
-        onError={()=>setAttempt(a=>a+1)}/>
+      <div style={{width:size,height:size,borderRadius:'50%',flexShrink:0,position:'relative',overflow:'hidden'}}>
+        {!loaded && <div style={{position:'absolute',inset:0,...bg,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:size*0.36}}>{initials(name)}</div>}
+        <img src={currentSrc} alt={name} className="avatar"
+          loading="lazy"
+          style={{width:size,height:size,objectFit:'cover',borderRadius:'50%',boxShadow:'0 2px 8px rgba(0,0,0,0.1)',flexShrink:0,opacity:loaded?1:0,transition:'opacity .25s'}}
+          onLoad={()=>setLoaded(true)}
+          onError={()=>{setAttempt(a=>a+1);setLoaded(false);}}/>
+      </div>
     );
   }
 
@@ -1235,7 +1309,7 @@ function LoginModal({onCancel,onSubmit}){
         <p>Sign in with an admin account to add or delete profiles.</p>
         <div className="login-field">
           <label>Email Address</label>
-          <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="name@eethallearning.com"
+          <input value={email} onChange={e=>{setEmail(e.target.value);setError("");}} placeholder="learningeethal@gmail.com"
             onKeyDown={e=>{ if(e.key==='Enter') submit(); }}/>
         </div>
         <div className="login-field">
@@ -1244,7 +1318,7 @@ function LoginModal({onCancel,onSubmit}){
             onKeyDown={e=>{ if(e.key==='Enter') submit(); }}/>
         </div>
         {error && <p style={{color:'var(--red)',fontSize:12.5,margin:'-8px 0 14px'}}>{error}</p>}
-        <p style={{fontSize:11.5,color:'var(--text-faint)',margin:'0 0 18px'}}>Demo access: deepa.raghavan@eethallearning.com / admin123</p>
+        <p style={{fontSize:11.5,color:'var(--text-faint)',margin:'0 0 18px'}}>Demo access: learningeethal@gmail.com / EethalAdmin2026!</p>
         <div className="modal-actions">
           <button className="btn btn-secondary" onClick={onCancel} disabled={loading}>Cancel</button>
           <button className="btn btn-primary" onClick={submit} disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
@@ -1285,19 +1359,19 @@ function App(){
       setProfessionals(pData);
       setStudents(sData);
     }catch(err){
-      setDataError("Couldn't reach the ProConnect server. Make sure it's running (node server.js) and reload this page.");
+      setDataError("Couldn't reach the Eethal Learning server. Make sure it's running (node server.js) and reload this page.");
     }finally{
       setDataLoading(false);
     }
   }
   useEffect(()=>{ loadData(); },[]);
 
-  function changeView(v){ setView(v); setDetail(null); setFormState(null); }
-  function handleSearchSubmit(){ if(globalSearch.trim()) changeView("search"); }
-  function openDetail(type,id){ setDetail({type,id}); setFormState(null); }
-  function openAdd(){ setFormState({mode:"add", type: view==="students"?"student":"professional", data:null}); setDetail(null); }
-  function openEdit(type,item){ setFormState({mode:"edit", type, data:item}); setDetail(null); }
-  function openDelete(type,item){ setDeleteTarget({type,item}); }
+  const changeView = useCallback((v)=>{ setView(v); setDetail(null); setFormState(null); }, []);
+  const handleSearchSubmit = useCallback(()=>{ if(globalSearch.trim()) changeView("search"); }, [globalSearch, changeView]);
+  const openDetail = useCallback((type,id)=>{ setDetail({type,id}); setFormState(null); }, []);
+  const openAdd = useCallback(()=>{ setFormState({mode:"add", type: view==="students"?"student":"professional", data:null}); setDetail(null); }, [view]);
+  const openEdit = useCallback((type,item)=>{ setFormState({mode:"edit", type, data:item}); setDetail(null); }, []);
+  const openDelete = useCallback((type,item)=>{ setDeleteTarget({type,item}); }, []);
 
   async function handleLoginSubmit(email,password){
     try{
