@@ -585,41 +585,36 @@ function extractDriveId(url){
 }
 
 function Avatar({name,size=44,gradient,photo}){
-  const driveId = useMemo(()=>extractDriveId(photo), [photo]);
-  const [attempt, setAttempt] = useState(0);
-  const [loaded, setLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(()=>{
-    setAttempt(0);
-    setLoaded(false);
+    setImgError(false);
   }, [photo]);
 
   const bg = gradient
     ? {background:`linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`}
     : gradientFor(name);
 
-  let currentSrc = null;
-  if(photo && typeof photo === 'string' && photo.trim()){
+  let src = null;
+  if(!imgError && photo && typeof photo === 'string' && photo.trim()){
     const trimmed = photo.trim();
+    const driveId = extractDriveId(trimmed);
     if(driveId){
-      if(attempt === 0) currentSrc = `https://lh3.googleusercontent.com/d/${driveId}`;
-      else if(attempt === 1) currentSrc = `https://drive.google.com/thumbnail?id=${driveId}&sz=w500`;
-      else if(attempt === 2) currentSrc = `https://drive.google.com/uc?export=view&id=${driveId}`;
-    } else if(attempt === 0 && (trimmed.startsWith('/') || trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:'))){
-      currentSrc = trimmed;
+      src = `https://lh3.googleusercontent.com/d/${driveId}`;
+    } else {
+      src = trimmed;
     }
   }
 
-  if(currentSrc){
+  if(src){
     return (
-      <div style={{width:size,height:size,borderRadius:'50%',flexShrink:0,position:'relative',overflow:'hidden'}}>
-        {!loaded && <div style={{position:'absolute',inset:0,...bg,display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:size*0.36}}>{initials(name)}</div>}
-        <img src={currentSrc} alt={name} className="avatar"
-          loading="lazy"
-          style={{width:size,height:size,objectFit:'cover',borderRadius:'50%',boxShadow:'0 2px 8px rgba(0,0,0,0.1)',flexShrink:0,opacity:loaded?1:0,transition:'opacity .25s'}}
-          onLoad={()=>setLoaded(true)}
-          onError={()=>{setAttempt(a=>a+1);setLoaded(false);}}/>
-      </div>
+      <img
+        src={src}
+        alt={name}
+        className="avatar"
+        style={{width:size,height:size,objectFit:'cover',borderRadius:'50%',boxShadow:'0 2px 8px rgba(0,0,0,0.1)',flexShrink:0}}
+        onError={()=>setImgError(true)}
+      />
     );
   }
 
