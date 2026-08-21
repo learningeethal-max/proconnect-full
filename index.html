@@ -1441,7 +1441,6 @@ function LoginModal({onCancel,onSubmit}){
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round"/></svg>
           {error}
         </p>}
-        <p style={{fontSize:11.5,color:'var(--text-faint)',margin:'-2px 0 16px',lineHeight:1.4}}>Demo Access: <strong>learningeethal@gmail.com</strong> / <strong>EethalAdmin2026!</strong> (or <strong>admin</strong> / <strong>admin</strong>)</p>
         <div className="modal-actions">
           <button className="btn btn-secondary" onClick={onCancel} disabled={loading}>Cancel</button>
           <button className="btn btn-primary" onClick={submit} disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
