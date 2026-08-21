@@ -1,7 +1,10 @@
 /**
  * ProConnect backend — zero external dependencies.
- * Serves the frontend from /public (or root) and a small REST API from /api/*,
- * persisting data to data/db.json (or db.json).
+ * Serves the frontend from /public and a small REST API from /api/*,
+ * persisting data to data/db.json.
+ *
+ * Run:  node server.js
+ * Then open http://localhost:3000 in your browser.
  */
 const http = require("http");
 const fs = require("fs");
@@ -23,6 +26,10 @@ const MIME = {
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
 };
 
 function readDB() {
@@ -140,11 +147,16 @@ async function handleLogin(req, res) {
     return sendJSON(res, 400, { error: "Invalid JSON body." });
   }
   const db = readDB();
-  const email = String(body.email || "").trim().toLowerCase();
-  const password = String(body.password || "");
-  const match = db.admins.find(
-    (a) => a.email.toLowerCase() === email && a.password === password
-  );
+  const inputEmail = String(body.email || "").trim().toLowerCase();
+  const inputPassword = String(body.password || "").trim();
+
+  const match = db.admins.find((a) => {
+    const aEmail = a.email.toLowerCase();
+    const emailMatches = aEmail === inputEmail || (inputEmail === "admin" && (aEmail === "admin" || aEmail === "learningeethal@gmail.com"));
+    const passMatches = a.password.trim() === inputPassword;
+    return emailMatches && passMatches;
+  });
+
   if (!match) return sendJSON(res, 401, { error: "Incorrect email or password." });
   return sendJSON(res, 200, { name: match.name, email: match.email });
 }
@@ -184,5 +196,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`ProConnect server running at http://localhost:${PORT}`);
+  console.log(`Eethal Learning server running at http://localhost:${PORT}`);
 });
