@@ -585,10 +585,10 @@ function extractDriveId(url){
 }
 
 function Avatar({name,size=44,gradient,photo}){
-  const [imgError, setImgError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(()=>{
-    setImgError(false);
+    setAttempt(0);
   }, [photo]);
 
   const bg = gradient
@@ -596,13 +596,21 @@ function Avatar({name,size=44,gradient,photo}){
     : gradientFor(name);
 
   let src = null;
-  if(!imgError && photo && typeof photo === 'string' && photo.trim()){
+  if(photo && typeof photo === 'string' && photo.trim()){
     const trimmed = photo.trim();
     const driveId = extractDriveId(trimmed);
     if(driveId){
-      src = `https://lh3.googleusercontent.com/d/${driveId}`;
+      if(attempt === 0) src = `https://lh3.googleusercontent.com/d/${driveId}`;
+      else if(attempt === 1) src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w500`;
     } else {
-      src = trimmed;
+      const baseName = trimmed.split('/').pop();
+      if(baseName && baseName.startsWith('photo_')){
+        if(attempt === 0) src = trimmed;
+        else if(attempt === 1) src = `/photos/${baseName}`;
+        else if(attempt === 2) src = `/${baseName}`;
+      } else if(attempt === 0){
+        src = trimmed;
+      }
     }
   }
 
@@ -613,7 +621,7 @@ function Avatar({name,size=44,gradient,photo}){
         alt={name}
         className="avatar"
         style={{width:size,height:size,objectFit:'cover',borderRadius:'50%',boxShadow:'0 2px 8px rgba(0,0,0,0.1)',flexShrink:0}}
-        onError={()=>setImgError(true)}
+        onError={()=>setAttempt(a=>a+1)}
       />
     );
   }

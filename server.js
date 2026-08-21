@@ -69,11 +69,28 @@ function readBody(req) {
 function serveStatic(req, res) {
   let reqPath = decodeURIComponent(req.url.split("?")[0]);
   if (reqPath === "/") reqPath = "/index.html";
-  const filePath = path.join(PUBLIC_DIR, reqPath);
-  if (!filePath.startsWith(PUBLIC_DIR)) {
-    res.writeHead(403);
-    return res.end("Forbidden");
+  
+  let filePath = path.join(PUBLIC_DIR, reqPath);
+  
+  // Smart fallback for photos if uploaded at root or in public/photos
+  if (!fs.existsSync(filePath)) {
+    const baseName = path.basename(reqPath);
+    if (baseName.startsWith("photo_")) {
+      const candidates = [
+        path.join(__dirname, "public", "photos", baseName),
+        path.join(__dirname, "public", baseName),
+        path.join(__dirname, "photos", baseName),
+        path.join(__dirname, baseName),
+      ];
+      for (const cand of candidates) {
+        if (fs.existsSync(cand)) {
+          filePath = cand;
+          break;
+        }
+      }
+    }
   }
+
   fs.readFile(filePath, (err, content) => {
     if (err) {
       res.writeHead(404, { "Content-Type": "text/plain" });
